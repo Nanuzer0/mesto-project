@@ -9,6 +9,10 @@ const profilePopup = document.querySelector('.popup_type_edit');
 const cardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
+// Элементы попапа с картинкой
+const popupImage = imagePopup.querySelector('.popup__image');
+const popupCaption = imagePopup.querySelector('.popup__caption');
+
 // Кнопки и другие элементы
 const profileEditButton = document.querySelector('.profile__edit-button');
 const addCardButton = document.querySelector('.profile__add-button');
@@ -35,6 +39,11 @@ function closeModal(popup) {
   popup.classList.remove('popup_is-opened');
 }
 
+// Добавляем класс анимации попапам
+[profilePopup, cardPopup, imagePopup].forEach((popup) => {
+  popup.classList.add('popup_is-animated');
+});
+
 // Функция создания карточки
 function createCard(cardData) {
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -49,8 +58,6 @@ function createCard(cardData) {
 
   // Обработчик клика по картинке
   cardImage.addEventListener('click', () => {
-    const popupImage = imagePopup.querySelector('.popup__image');
-    const popupCaption = imagePopup.querySelector('.popup__caption');
     popupImage.src = cardData.link;
     popupImage.alt = cardData.name;
     popupCaption.textContent = cardData.name;
