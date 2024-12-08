@@ -1,7 +1,12 @@
 import { enableValidation } from './components/validate.js';
 import { openPopup, closePopup, setPopupListeners } from './components/modal.js';
 import { createCard } from './components/card.js';
-import { initialCards } from './scripts/cards.js';
+import { 
+  getUserInfo, 
+  getInitialCards, 
+  updateUserInfo, 
+  addCard 
+} from './components/api.js';
 import './styles/index.css';
 
 // Настройки валидации
@@ -69,24 +74,30 @@ function handleCardImageClick(cardData) {
 // Обработчик отправки формы карточки
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
-  const newCard = createCard(
-    {
-      name: cardNameInput.value,
-      link: cardLinkInput.value
-    },
-    handleCardImageClick
-  );
-  cardsList.prepend(newCard);
-  closePopup(cardPopup);
-  evt.target.reset();
+  addCard(cardNameInput.value, cardLinkInput.value)
+    .then((cardData) => {
+      const cardElement = createCard(cardData, handleCardImageClick);
+      cardsList.prepend(cardElement);
+      closePopup(cardPopup);
+      evt.target.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 // Обработчик отправки формы профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-  closePopup(profilePopup);
+  updateUserInfo(nameInput.value, jobInput.value)
+    .then((userData) => {
+      profileTitle.textContent = userData.name;
+      profileDescription.textContent = userData.about;
+      closePopup(profilePopup);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 // Обработчик открытия формы редактирования профиля
@@ -107,8 +118,19 @@ popupCloseButtons.forEach((button) => {
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleCardFormSubmit);
 
-// Вывести начальные карточки на страницу
-initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, handleCardImageClick);
-  cardsList.append(cardElement);
-});
+// Загрузка данных с сервера
+Promise.all([getUserInfo(), getInitialCards()])
+  .then(([userData, cards]) => {
+    // Установка данных пользователя
+    profileTitle.textContent = userData.name;
+    profileDescription.textContent = userData.about;
+    
+    // Отрисовка карточек
+    cards.forEach((cardData) => {
+      const cardElement = createCard(cardData, handleCardImageClick);
+      cardsList.append(cardElement);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
