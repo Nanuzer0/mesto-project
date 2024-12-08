@@ -1,3 +1,3 @@
 # Проектная работа Mesto
 
-студент, когорта, стэк
+https://nanuzer0.github.io/mesto-project/
