@@ -1,3 +1,24 @@
+import { enableValidation } from '../components/validate.js';
+import { openPopup, closePopup, setPopupListeners } from '../components/modal.js';
+import { createCard } from '../components/card.js';
+
+// Настройки валидации
+const validationSettings = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
+
+// Находим все попапы и добавляем им слушатели
+const popups = document.querySelectorAll('.popup');
+popups.forEach(setPopupListeners);
+
+// Включаем валидацию форм
+enableValidation(validationSettings);
+
 // @todo: Темплейт карточки
 
 // @todo: DOM узлы
@@ -44,37 +65,27 @@ function closeModal(popup) {
   popup.classList.add('popup_is-animated');
 });
 
-// Функция создания карточки
-function createCard(cardData) {
-  const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-  const cardImage = cardElement.querySelector('.card__image');
-  const cardTitle = cardElement.querySelector('.card__title');
-  const deleteButton = cardElement.querySelector('.card__delete-button');
-  const likeButton = cardElement.querySelector('.card__like-button');
+// Функция открытия попапа с картинкой
+function handleCardImageClick(cardData) {
+  popupImage.src = cardData.link;
+  popupImage.alt = cardData.name;
+  popupCaption.textContent = cardData.name;
+  openPopup(imagePopup);
+}
 
-  cardImage.src = cardData.link;
-  cardImage.alt = cardData.name;
-  cardTitle.textContent = cardData.name;
-
-  // Обработчик клика по картинке
-  cardImage.addEventListener('click', () => {
-    popupImage.src = cardData.link;
-    popupImage.alt = cardData.name;
-    popupCaption.textContent = cardData.name;
-    openModal(imagePopup);
-  });
-
-  // Обработчик лайка
-  likeButton.addEventListener('click', () => {
-    likeButton.classList.toggle('card__like-button_is-active');
-  });
-
-  // Обработчик удаления
-  deleteButton.addEventListener('click', () => {
-    cardElement.remove();
-  });
-
-  return cardElement;
+// Обработчик отправки формы карточки
+function handleCardFormSubmit(evt) {
+  evt.preventDefault();
+  const newCard = createCard(
+    {
+      name: cardNameInput.value,
+      link: cardLinkInput.value
+    },
+    handleCardImageClick
+  );
+  cardsList.prepend(newCard);
+  closePopup(cardPopup);
+  evt.target.reset();
 }
 
 // Обработчик отправки формы профиля
@@ -83,18 +94,6 @@ function handleProfileFormSubmit(evt) {
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
   closeModal(profilePopup);
-}
-
-// Обработчик отправки формы карточки
-function handleCardFormSubmit(evt) {
-  evt.preventDefault();
-  const newCard = createCard({
-    name: cardNameInput.value,
-    link: cardLinkInput.value
-  });
-  cardsList.prepend(newCard);
-  closeModal(cardPopup);
-  evt.target.reset();
 }
 
 // Обработчик открытия формы редактирования профиля
@@ -117,6 +116,6 @@ cardForm.addEventListener('submit', handleCardFormSubmit);
 
 // Вывести начальные карточки на страницу
 initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData);
+  const cardElement = createCard(cardData, handleCardImageClick);
   cardsList.append(cardElement);
 });
