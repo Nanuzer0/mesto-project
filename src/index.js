@@ -85,9 +85,17 @@ function handleCardImageClick(cardData) {
 // В начале файла добавьте переменную для хранения userId
 let userId;
 
+// Функция управления текстом кнопки во время загрузки
+function renderLoading(button, isLoading, buttonText='Сохранить', loadingText='Сохранение...') {
+  button.textContent = isLoading ? loadingText : buttonText;
+}
+
 // Обработчик отправки формы карточки
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  renderLoading(submitButton, true, 'Создать', 'Создание...');
+
   addCard(cardNameInput.value, cardLinkInput.value)
     .then((cardData) => {
       const cardElement = createCard(cardData, handleCardImageClick, userId);
@@ -97,12 +105,18 @@ function handleCardFormSubmit(evt) {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, false, 'Создать');
     });
 }
 
 // Обработчик отправки формы профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  renderLoading(submitButton, true);
+
   updateUserInfo(nameInput.value, jobInput.value)
     .then((userData) => {
       profileTitle.textContent = userData.name;
@@ -111,6 +125,9 @@ function handleProfileFormSubmit(evt) {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, false);
     });
 }
 
@@ -129,6 +146,9 @@ profileImageButton.addEventListener('click', () => {
 // Обработчик отправки формы аватара
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  renderLoading(submitButton, true);
+
   updateAvatar(avatarInput.value)
     .then((userData) => {
       profileImage.src = userData.avatar;
@@ -137,6 +157,9 @@ function handleAvatarFormSubmit(evt) {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, false);
     });
 }
 
