@@ -20,17 +20,21 @@ const setEventListeners = (formElement, settings) => {
 };
 
 const showInputError = (formElement, inputElement, errorMessage, settings) => {
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add(settings.inputErrorClass);
-  errorElement.textContent = errorMessage;
-  errorElement.classList.add(settings.errorClass);
+  const errorElement = formElement.querySelector(`.popup__error_type_${inputElement.name}`);
+  if (errorElement) {
+    inputElement.classList.add(settings.inputErrorClass);
+    errorElement.textContent = errorMessage;
+    errorElement.classList.add(settings.errorClass);
+  }
 };
 
 const hideInputError = (formElement, inputElement, settings) => {
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove(settings.inputErrorClass);
-  errorElement.classList.remove(settings.errorClass);
-  errorElement.textContent = '';
+  const errorElement = formElement.querySelector(`.popup__error_type_${inputElement.name}`);
+  if (errorElement) {
+    inputElement.classList.remove(settings.inputErrorClass);
+    errorElement.classList.remove(settings.errorClass);
+    errorElement.textContent = '';
+  }
 };
 
 const checkInputValidity = (formElement, inputElement, settings) => {

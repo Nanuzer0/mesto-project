@@ -1,6 +1,8 @@
-import { enableValidation } from '../components/validate.js';
-import { openPopup, closePopup, setPopupListeners } from '../components/modal.js';
-import { createCard } from '../components/card.js';
+import { enableValidation } from './components/validate.js';
+import { openPopup, closePopup, setPopupListeners } from './components/modal.js';
+import { createCard } from './components/card.js';
+import { initialCards } from './scripts/cards.js';
+import './styles/index.css';
 
 // Настройки валидации
 const validationSettings = {
@@ -51,15 +53,6 @@ const cardForm = document.querySelector('.popup_type_new-card .popup__form');
 const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
 const cardLinkInput = cardForm.querySelector('.popup__input_type_url');
 
-// Функции открытия/закрытия попапов
-function openModal(popup) {
-  popup.classList.add('popup_is-opened');
-}
-
-function closeModal(popup) {
-  popup.classList.remove('popup_is-opened');
-}
-
 // Добавляем класс анимации попапам
 [profilePopup, cardPopup, imagePopup].forEach((popup) => {
   popup.classList.add('popup_is-animated');
@@ -93,22 +86,22 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
-  closeModal(profilePopup);
+  closePopup(profilePopup);
 }
 
 // Обработчик открытия формы редактирования профиля
 function handleProfileEditClick() {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-  openModal(profilePopup);
+  openPopup(profilePopup);
 }
 
 // Слушатели событий
 profileEditButton.addEventListener('click', handleProfileEditClick);
-addCardButton.addEventListener('click', () => openModal(cardPopup));
+addCardButton.addEventListener('click', () => openPopup(cardPopup));
 popupCloseButtons.forEach((button) => {
   const popup = button.closest('.popup');
-  button.addEventListener('click', () => closeModal(popup));
+  button.addEventListener('click', () => closePopup(popup));
 });
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
