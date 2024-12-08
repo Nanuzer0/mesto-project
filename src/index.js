@@ -8,7 +8,8 @@ import {
   addCard,
   deleteCard,
   likeCard,
-  unlikeCard 
+  unlikeCard,
+  updateAvatar
 } from './components/api.js';
 import './styles/index.css';
 
@@ -39,6 +40,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 const profilePopup = document.querySelector('.popup_type_edit');
 const cardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
+const avatarPopup = document.querySelector('.popup_type_avatar');
 
 // Элементы попапа с картинкой
 const popupImage = imagePopup.querySelector('.popup__image');
@@ -61,8 +63,14 @@ const cardForm = document.querySelector('.popup_type_new-card .popup__form');
 const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
 const cardLinkInput = cardForm.querySelector('.popup__input_type_url');
 
+// Элементы формы аватара
+const avatarForm = avatarPopup.querySelector('.popup__form');
+const avatarInput = avatarForm.querySelector('.popup__input_type_avatar');
+const profileImage = document.querySelector('.profile__image');
+const profileImageButton = document.querySelector('.profile__image-edit-button');
+
 // Добавляем класс анимации попапам
-[profilePopup, cardPopup, imagePopup].forEach((popup) => {
+[profilePopup, cardPopup, imagePopup, avatarPopup].forEach((popup) => {
   popup.classList.add('popup_is-animated');
 });
 
@@ -110,6 +118,25 @@ function handleProfileEditClick() {
   openPopup(profilePopup);
 }
 
+// Обработчик открытия попапа аватара
+profileImageButton.addEventListener('click', () => {
+  openPopup(avatarPopup);
+});
+
+// Обработчик отправки формы аватара
+function handleAvatarFormSubmit(evt) {
+  evt.preventDefault();
+  updateAvatar(avatarInput.value)
+    .then((userData) => {
+      profileImage.src = userData.avatar;
+      closePopup(avatarPopup);
+      evt.target.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
 // Слушатели событий
 profileEditButton.addEventListener('click', handleProfileEditClick);
 addCardButton.addEventListener('click', () => openPopup(cardPopup));
@@ -120,6 +147,7 @@ popupCloseButtons.forEach((button) => {
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleCardFormSubmit);
+avatarForm.addEventListener('submit', handleAvatarFormSubmit);
 
 // Загрузка данных с сервера
 Promise.all([getUserInfo(), getInitialCards()])
@@ -130,6 +158,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     // Установка данных пользователя
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
+    profileImage.src = userData.avatar;
     
     // Отрисовка карточек с передачей userId
     cards.forEach((cardData) => {
