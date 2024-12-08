@@ -5,7 +5,10 @@ import {
   getUserInfo, 
   getInitialCards, 
   updateUserInfo, 
-  addCard 
+  addCard,
+  deleteCard,
+  likeCard,
+  unlikeCard 
 } from './components/api.js';
 import './styles/index.css';
 
@@ -76,7 +79,7 @@ function handleCardFormSubmit(evt) {
   evt.preventDefault();
   addCard(cardNameInput.value, cardLinkInput.value)
     .then((cardData) => {
-      const cardElement = createCard(cardData, handleCardImageClick);
+      const cardElement = createCard(cardData, handleCardImageClick, cardData.owner._id);
       cardsList.prepend(cardElement);
       closePopup(cardPopup);
       evt.target.reset();
@@ -121,13 +124,16 @@ cardForm.addEventListener('submit', handleCardFormSubmit);
 // Загрузка данных с сервера
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {
+    // Сохраняем id пользователя
+    const userId = userData._id;
+    
     // Установка данных пользователя
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
     
-    // Отрисовка карточек
+    // Отрисовка карточек с передачей userId
     cards.forEach((cardData) => {
-      const cardElement = createCard(cardData, handleCardImageClick);
+      const cardElement = createCard(cardData, handleCardImageClick, userId);
       cardsList.append(cardElement);
     });
   })
