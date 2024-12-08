@@ -82,12 +82,15 @@ function handleCardImageClick(cardData) {
   openPopup(imagePopup);
 }
 
+// В начале файла добавьте переменную для хранения userId
+let userId;
+
 // Обработчик отправки формы карточки
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
   addCard(cardNameInput.value, cardLinkInput.value)
     .then((cardData) => {
-      const cardElement = createCard(cardData, handleCardImageClick, cardData.owner._id);
+      const cardElement = createCard(cardData, handleCardImageClick, userId);
       cardsList.prepend(cardElement);
       closePopup(cardPopup);
       evt.target.reset();
@@ -153,7 +156,7 @@ avatarForm.addEventListener('submit', handleAvatarFormSubmit);
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {
     // Сохраняем id пользователя
-    const userId = userData._id;
+    userId = userData._id;
     
     // Установка данных пользователя
     profileTitle.textContent = userData.name;
